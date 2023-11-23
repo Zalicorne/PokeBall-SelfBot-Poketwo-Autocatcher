@@ -13,6 +13,7 @@ class Paginator:
     async def _add_handler(self):
         def reaction_check(reaction,user):
             return user == self.message.author and reaction.message.id == self.base.id and reaction.emoji in self.pointers
+
         while True: 
             reaction, user = await discord.Client.wait_for(self.obj, event='reaction_add', check=reaction_check)
             op = self.pointers.index(reaction.emoji)
@@ -24,13 +25,12 @@ class Paginator:
                 await self.base.edit(embed=self.embeds[self.cursor])
             elif op == 2:
                 await self.base.delete()
-                break    
-            else:
-                pass
+                break
 
     async def _remove_handler(self):
         def reaction_check(reaction,user):
             return user == self.message.author and reaction.message.id == self.base.id and reaction.emoji in self.pointers
+
         while True: 
             reaction, user = await discord.Client.wait_for(self.obj, event='reaction_remove', check=reaction_check)
             op = self.pointers.index(reaction.emoji)
@@ -39,9 +39,7 @@ class Paginator:
                 await self.base.edit(embed=self.embeds[self.cursor])
             elif op == 0 and self.cursor > 0:
                 self.cursor -= 1
-                await self.base.edit(embed=self.embeds[self.cursor])
-            else:
-                pass                    
+                await self.base.edit(embed=self.embeds[self.cursor])                    
 
     async def run(self):
         await self.base.edit(content=self.message.author.mention,embed=self.embeds[0])
