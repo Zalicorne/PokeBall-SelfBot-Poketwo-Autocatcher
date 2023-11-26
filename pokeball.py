@@ -117,41 +117,40 @@ class PokeBall(discord.Client):
     async def on_message(self, message):
         def pokecord_reply(msg):
             return msg.author.id == 365975655608745985
-        
+
         if not self.ready:
             return
 
         if "guild" not in dir(message): #Skip DMs to avoid AttributeError (alt)
             return
-        
-        if message.guild is None: #Skip DMs to avoid AttributeError
+
+        if message.guild is None:
             return
-        else:
-            blacklist_checks = [
-                self.mode == "blacklist",
-                message.channel.id in self.configs["blacklists"]    
-            ]
-            whitelist_checks = [
-                self.mode == "whitelist",
-                message.channel.id not in self.configs["whitelists"]    
-            ]
-            blackguild_checks = [
-                self.guild_mode == "blacklist",
-                message.guild.id in self.configs["blacklist_guilds"]    
-            ]
-            whiteguild_checks = [
-                self.guild_mode == "whitelist",
-                message.guild.id not in self.configs["whitelist_guilds"]    
-            ]
-            return_checks = [
-                all(blacklist_checks),
-                all(whitelist_checks),
-                all(blackguild_checks),
-                all(whiteguild_checks)
-            ]
-            if any(return_checks):
-                return
-        
+        blacklist_checks = [
+            self.mode == "blacklist",
+            message.channel.id in self.configs["blacklists"]    
+        ]
+        whitelist_checks = [
+            self.mode == "whitelist",
+            message.channel.id not in self.configs["whitelists"]    
+        ]
+        blackguild_checks = [
+            self.guild_mode == "blacklist",
+            message.guild.id in self.configs["blacklist_guilds"]    
+        ]
+        whiteguild_checks = [
+            self.guild_mode == "whitelist",
+            message.guild.id not in self.configs["whitelist_guilds"]    
+        ]
+        return_checks = [
+            all(blacklist_checks),
+            all(whitelist_checks),
+            all(blackguild_checks),
+            all(whiteguild_checks)
+        ]
+        if any(return_checks):
+            return
+
         #AutoCatcher
         pokeball_checks = [
             message.author.id == 365975655608745985,
@@ -165,7 +164,7 @@ class PokeBall(discord.Client):
                 level = params[1].replace('Level: ', '')
                 number = params[2].replace('Number: ', '')
                 return f"{name} -> {number} -> {level}"
-            
+
             emb = message.embeds[0]
             try:
                 embcheck = emb.title.startswith('A wild')
@@ -466,10 +465,9 @@ class PokeBall(discord.Client):
                     embed = discord.Embed(title="Search Results", description="\u200B", color=15728640)
                     if results == "\u200B":
                         continue
-                    else:
-                        for result in results[i:i+10]:
-                            embed.add_field(name=result[0], value=f"**ID**: {result[1]}\n**LEVEL**: {result[2]}", inline=False)
-                        embeds.append(embed)
+                    for result in results[i:i+10]:
+                        embed.add_field(name=result[0], value=f"**ID**: {result[1]}\n**LEVEL**: {result[2]}", inline=False)
+                    embeds.append(embed)
                 try:
                     base = await message.channel.send(content=None, embed=embeds[0])
                     pager = Paginator(message, base, embeds, self)
@@ -492,11 +490,9 @@ class PokeBall(discord.Client):
 
     async def cmd_duplicates(self, message, args=[]):
         pokemons = [pokemon.split(' -> ')[0] for pokemon in self.pokelist]
-        limit = 2
-        if args:
-            limit = int(args[0])
+        limit = int(args[0]) if args else 2
         dups = {dup for dup in pokemons if pokemons.count(dup) >= limit}
-        if len(dups) == 0:
+        if not dups:
             await message.channel.send("There is no pokemon with so many duplicates. Try a smaller number.")
             return
         dups = list(dups)
